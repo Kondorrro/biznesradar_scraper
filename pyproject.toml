@@ -10,6 +10,7 @@ packages = [{include = "biznesradar_scraper"}]
 python = "^3.10"
 playwright = "^1.49.0"
 requests = "^2.32.3"
+pandas = "^2.2.2"
 
 
 [build-system]
