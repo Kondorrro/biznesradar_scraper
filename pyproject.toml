@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "biznesradar-scraper"
+name = "biznesradar_scraper"
 version = "0.1.0"
 description = ""
 authors = ["Vultur Gryphus <konlakomy@gmail.com>"]
