@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import re
 from functools import cached_property
+from datetime import datetime
 
 from .helpers.launch_page import LaunchPage
 
@@ -25,7 +26,11 @@ class BrScraper:
     def _parse_report_dates(page):
         raw = page.query_selector("#profile-finreports > table > tbody > tr:nth-child(1)")
         content = raw.text_content().replace("\t", "").replace("\n", "")
-        return pd.to_datetime(re.findall(r"(\d{4})", content))
+        dates = pd.to_datetime(re.findall(r"(\d{4})", content))
+        today = pd.Timestamp(datetime.now().date())
+        dates = dates.append(pd.DatetimeIndex([today]))
+
+        return dates
 
     @staticmethod
     def _parse_revenue(page):
@@ -37,8 +42,6 @@ class BrScraper:
             if result:
                 data.append(int(result.group(0)))
 
-        # remove last column because
-        data.pop()
         return data
 
     def financials(self, quarterly=False):
@@ -56,11 +59,12 @@ class BrScraper:
             report_dates = self._parse_report_dates(page)
             revenue = self._parse_revenue(page)
 
-        df = pd.DataFrame(revenue)
-        df["dates"] = report_dates
-        df.set_index("dates", inplace=True)
+        self._financials_annual_data["Revenue"] = pd.DataFrame(revenue)
+        self._financials_annual_data["dates"] = report_dates
+        self._financials_annual_data.set_index("dates", inplace=True)
+        self._financials_annual_data.sort_index(ascending=False, inplace=True)
 
         # if quarterly:
         #     df['quarter'] = 'Q' + df.index.quarter.astype(str)
 
-        return df
+        return self._financials_annual_data
