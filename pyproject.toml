@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "biznesradar-scraper"
+version = "0.1.0"
+description = ""
+authors = ["Vultur Gryphus <konlakomy@gmail.com>"]
+readme = "README.md"
+packages = [{include = "biznesradar_scraper"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+playwright = "^1.49.0"
+requests = "^2.32.3"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
