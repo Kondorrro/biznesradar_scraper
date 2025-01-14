@@ -49,7 +49,21 @@ class BrScraper:
 
     @staticmethod
     def _parse_revenue(page):
+        "Przychody ze sprzedaży"
         raw = page.query_selector("#profile-finreports > table > tbody > tr:nth-child(3)")
+        columns = raw.query_selector_all("td")
+        data = []
+        for c in columns:
+            result = re.search(r"(\d{1,})", c.text_content().replace(" ", ""))
+            if result:
+                data.append(int(result.group(0)))
+
+        return data
+
+    @staticmethod
+    def _parse_net_income(page):
+        "Zysk netto"
+        raw = page.query_selector("#profile-finreports > table > tbody > tr:nth-child(18)")
         columns = raw.query_selector_all("td")
         data = []
         for c in columns:
@@ -84,8 +98,9 @@ class BrScraper:
 
             report_dates = self._parse_report_dates(page, quarterly=quarterly)
             revenue = self._parse_revenue(page)
+            net_income = self._parse_net_income(page)
 
-        df = pd.DataFrame({"Revenue": revenue})
+        df = pd.DataFrame({"Revenue": revenue, "Net Income": net_income})
         df["dates"] = report_dates
         df.set_index("dates", inplace=True)
         df.sort_index(ascending=False, inplace=True)
